@@ -13,6 +13,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 << LICENSE */
 #include <fstream>
+#include "uwp_ifstream.h"
 #include <iostream>
 
 #include "i486symtable.h"
@@ -79,7 +80,7 @@ std::string i486Symbol::Format(bool returnType,bool label,bool param) const
 
 bool i486SymbolTable::Load(const char fName[])
 {
-	std::ifstream ifp(fName);
+	TsugaruIfStream ifp(fName);
 	if(ifp.is_open() && Load(ifp))
 	{
 		this->fName=fName;
@@ -197,7 +198,7 @@ bool i486SymbolTable::Load(std::istream &ifp)
 
 bool i486SymbolTable::Save(const char fName[]) const
 {
-	std::ofstream ofp(fName);
+	TsugaruOfStream ofp(fName);
 	if(ofp.is_open() && Save(ofp))
 	{
 		this->fName=fName;

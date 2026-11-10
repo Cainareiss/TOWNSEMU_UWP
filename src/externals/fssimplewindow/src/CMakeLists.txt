@@ -18,6 +18,7 @@ endif()
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsStore")
 	set(platform_SRCS
 		uwp/fsuwpwrapper.cpp
+		windows/fswin32keymap.cpp
 	)
 elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Android")
 	set(platform_SRCS
@@ -56,12 +57,18 @@ android/fssimplewindow_android.h
 add_library(${TARGET_NAME} ${SRCS} ${HEADERS})
 target_link_libraries(${TARGET_NAME} ${LIB_DEPENDENCY})
 target_include_directories(${TARGET_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+if(TSUGARU_UWP)
+	target_include_directories(${TARGET_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/uwp)
+	target_compile_definitions(${TARGET_NAME} PUBLIC FSSIMPLEWINDOW_DONT_INCLUDE_OPENGL_HEADERS=1)
+endif()
 set_property(TARGET ${TARGET_NAME} PROPERTY FOLDER ${SUB_FOLDER})
 
 add_library(fssimplenowindow fssimplewindowcommon.cpp nownd/fssimplenowindow.cpp)
 target_include_directories(fssimplenowindow PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 set_property(TARGET fssimplenowindow PROPERTY FOLDER ${SUB_FOLDER})
 
+if(NOT TSUGARU_UWP)
 add_subdirectory(tests)
+endif()
 
 set(YS_ALL_BATCH_TEST ${YS_ALL_BATCH_TEST} PARENT_SCOPE)

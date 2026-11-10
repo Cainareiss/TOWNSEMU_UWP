@@ -1,4 +1,5 @@
 #include <fstream>
+#include "uwp_ifstream.h"
 
 #include "towns.h"
 
@@ -14,7 +15,7 @@
 bool FMTownsCommon::SaveState(std::string fName) const
 {
 	auto &cpu=CPU();
-	std::ofstream ofp(fName,std::ios::binary);
+	TsugaruOfStream ofp(fName,std::ios::binary);
 	if(true==ofp.is_open())
 	{
 		for(auto devPtr : DevicesToSaveState())
@@ -31,7 +32,7 @@ bool FMTownsCommon::SaveState(std::string fName) const
 }
 bool FMTownsCommon::LoadState(std::string fName)
 {
-	std::ifstream ifp(fName,std::ios::binary);
+	TsugaruIfStream ifp(fName,std::ios::binary);
 	if(true==ifp.is_open())
 	{
 		highResPCM.state.enabled=false; // If not read must be made by an old version, keep it disabled.

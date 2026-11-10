@@ -28,9 +28,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "discimg.h"
 
 #include "fssimplewindow_connection.h"
+#ifdef TSUGARU_UWP
+#include <functional>
+#include <condition_variable>
+#endif
 
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(TSUGARU_UWP)
 #include <timeapi.h>
 #else
 static void timeBeginPeriod(int)
@@ -61,6 +65,7 @@ public:
 		towns.var.ftfr.AddHostToVM(ftfr.hostFName,ftfr.vmFName);
 	}
 
+#ifndef TSUGARU_UWP  // No console in UWP: commands come from TsugaruUwpPostCommand.
 	if(true==argv.interactive)
 	{
 		while(true!=uiTerminate)
@@ -94,10 +99,34 @@ public:
 			}
 		}
 	}
+#endif
 }
+
+#ifdef TSUGARU_UWP
+// A job the UWP host wants run on the VM thread, between two instructions (save/load state, swap a disc).
+static std::mutex g_uwpJobLock;
+static std::condition_variable g_uwpJobCv;
+static std::function<void(TownsThread &,FMTownsCommon &)> g_uwpJob;
+static bool g_uwpJobDone=false;
+#endif
 
 /* virtual */ void TownsCUIThread::ExecCommandQueue(TownsThread &townsThread,FMTownsCommon &towns,Outside_World *outside_world,Outside_World::Sound *sound)
 {
+#ifdef TSUGARU_UWP
+	{
+		std::unique_lock <std::mutex> jobLock(g_uwpJobLock);
+		if(g_uwpJob)
+		{
+			auto job=std::move(g_uwpJob);
+			g_uwpJob=nullptr;
+			jobLock.unlock();
+			job(townsThread,towns);
+			jobLock.lock();
+			g_uwpJobDone=true;
+			g_uwpJobCv.notify_all();
+		}
+	}
+#endif
 	if(true==cmdInterpreter.waitVM)
 	{
 		unsigned int vmState;
@@ -138,6 +167,46 @@ public:
 
 
 
+#ifdef TSUGARU_UWP
+static TownsCUIThread *g_uwpCui=nullptr;
+static Outside_World *g_uwpOutsideWorld=nullptr;
+
+/*! Runs fn on the VM thread between two instructions and waits for it (at most timeoutMs).  Any thread but the VM
+    thread.  Returns false when no VM runs or the VM did not get to it in time. */
+bool TsugaruUwpRunOnVM(std::function<void(TownsThread &,FMTownsCommon &)> fn,int timeoutMs)
+{
+	if(nullptr==g_uwpCui || nullptr==g_uwpOutsideWorld)
+	{
+		return false;
+	}
+	std::unique_lock <std::mutex> jobLock(g_uwpJobLock);
+	if(g_uwpJob)
+	{
+		return false; // one at a time
+	}
+	g_uwpJobDone=false;
+	g_uwpJob=std::move(fn);
+	const bool done=g_uwpJobCv.wait_for(jobLock,std::chrono::milliseconds(timeoutMs),[]{return g_uwpJobDone;});
+	if(true!=done)
+	{
+		g_uwpJob=nullptr; // the VM never took it (it is gone or stuck): drop it
+	}
+	return done;
+}
+
+/*! Posts a console command ("PAUSE", "RUN", "Q"...) to the running VM.  Any thread.  Ignored when no VM runs. */
+void TsugaruUwpPostCommand(const std::string &cmd)
+{
+	auto cui=g_uwpCui;
+	auto ow=g_uwpOutsideWorld;
+	if(nullptr!=cui && nullptr!=ow)
+	{
+		std::lock_guard <std::mutex> guard(cui->uiLock);
+		ow->commandQueue.push(cmd);
+	}
+}
+#endif
+
 template <class CPUCLASS>
 int Run(FMTownsTemplate <CPUCLASS> &towns,const TownsARGV &argv,Outside_World &outside_world,Outside_World::Sound &sound,Outside_World::WindowInterface &window)
 {
@@ -158,6 +227,10 @@ int Run(FMTownsTemplate <CPUCLASS> &towns,const TownsARGV &argv,Outside_World &o
 	}
 
 	TownsCUIThread cuiThread;
+#ifdef TSUGARU_UWP
+	g_uwpOutsideWorld=&outside_world;
+	g_uwpCui=&cuiThread;
+#endif
 
 	std::thread UIThread(&TownsCUIThread::Run,&cuiThread,&townsThread,&towns,&argv,&outside_world);
 
@@ -191,10 +264,21 @@ int Run(FMTownsTemplate <CPUCLASS> &towns,const TownsARGV &argv,Outside_World &o
 	VMThread.join();
 	UIThread.join();
 
+#ifdef TSUGARU_UWP
+	g_uwpCui=nullptr;
+	g_uwpOutsideWorld=nullptr;
+#endif
+
 	return towns.var.returnCode;
 }
 
+#ifdef TSUGARU_UWP
+// Entry point of the emulator in the UWP host: the host calls it on its own thread with a synthesized argv, and it
+// returns when the VM is closed.
+int TsugaruUwpMain(int ac,char *av[])
+#else
 int main(int ac,char *av[])
+#endif
 {
 	if(sizeof(void *)<8)
 	{

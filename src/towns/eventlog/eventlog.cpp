@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 #include <iostream>
+#include "uwp_ifstream.h"
 #include <fstream>
 #include <map>
 
@@ -371,7 +372,7 @@ void TownsEventLog::AddClick(int x,int y,int t0,int t1)
 
 bool TownsEventLog::SaveEventLog(std::string fName) const
 {
-	std::ofstream ofp(fName);
+	TsugaruOfStream ofp(fName);
 	if(ofp.is_open())
 	{
 		for(auto str : GetText())
@@ -385,7 +386,7 @@ bool TownsEventLog::SaveEventLog(std::string fName) const
 }
 bool TownsEventLog::LoadEventLog(std::string fName)
 {
-	std::ifstream ifp(fName);
+	TsugaruIfStream ifp(fName);
 	if(ifp.is_open())
 	{
 		std::map <std::string,int> strToEventType;

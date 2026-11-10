@@ -13,6 +13,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 << LICENSE */
 #include <fstream>
+#include "uwp_ifstream.h"
 #include <iostream>
 
 #include "i486symtable.h"
@@ -34,7 +35,7 @@ bool i486SymbolTable::ImportEXPSymbolTable(std::string fName)
 
 
 	// Read Binary
-	std::ifstream ifp;
+	TsugaruIfStream ifp;
 	ifp.open(fName,std::ios::binary);
 	if(ifp.is_open())
 	{

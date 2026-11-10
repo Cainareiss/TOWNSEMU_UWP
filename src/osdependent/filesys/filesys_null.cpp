@@ -28,3 +28,41 @@ FileSys::~FileSys()
 {
 	return false;
 }
+
+// The shared-directory feature (FileSys) is not available in the UWP build: nothing to list.
+class FileSys::FindContext
+{
+};
+/* static */ FileSys::FindContext *FileSys::CreateFindContext(void)
+{
+	return new FindContext;
+}
+/* static */ void FileSys::DeleteFindContext(FindContext *find)
+{
+	delete find;
+}
+/* static */ void FileSys::FindClose(FindContext *)
+{
+}
+FileSys::DirectoryEntry FileSys::FindFirst(std::string,FindContext *)
+{
+	DirectoryEntry ent;
+	ent.endOfDir=true;
+	return ent;
+}
+FileSys::DirectoryEntry FileSys::FindNext(FindContext *)
+{
+	DirectoryEntry ent;
+	ent.endOfDir=true;
+	return ent;
+}
+FileSys::DirectoryEntry FileSys::GetFileAttrib(std::string) const
+{
+	DirectoryEntry ent;
+	ent.endOfDir=true;
+	return ent;
+}
+/* static */ bool FileSys::Rmdir(std::string)
+{
+	return false;
+}

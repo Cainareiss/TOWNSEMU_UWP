@@ -5,7 +5,9 @@ set(DEPEND_LIB )
 
 
 
-if(MSVC)
+if(TSUGARU_UWP)
+	list(APPEND SRCS uwp/ysgamepad_uwp.cpp uwp/ysgamepad_uwp.h)
+elseif(MSVC)
 	list(APPEND SRCS windows/ysgamepad_windows.c)
 elseif(APPLE)
 	find_library(GAMECONTROLLER_LIB GameController)
@@ -24,4 +26,6 @@ add_library(${TARGET_NAME} ${SRCS})
 target_link_libraries(${TARGET_NAME} ${DEPEND_LIB})
 target_include_directories(${TARGET_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
+if(NOT TSUGARU_UWP)
 add_subdirectory(test)
+endif()

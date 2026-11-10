@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include "uwp_ifstream.h"
 #include <fstream>
 #include <iostream>
 #include "d77ext.h"
@@ -24,7 +25,7 @@ unsigned int D77ExtraInfo::ReadD77Ext(std::string fName)
 	//   Example: Cylidner 0, Side 0, Sector 247 ($F7) should have unstable bytes from offset 288 ($120) for 4 bytes.
 	//   S 0 0 247 USBYTE 288 4
 
-	std::ifstream ifp(fName);
+	TsugaruIfStream ifp(fName);
 	if(true==ifp.is_open())
 	{
 		while(true!=ifp.eof())

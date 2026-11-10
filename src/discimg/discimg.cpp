@@ -13,6 +13,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 << LICENSE */
 #include <iostream>
+#include "uwp_ifstream.h"
 #include <fstream>
 #include <vector>
 #include <unordered_map>
@@ -195,7 +196,7 @@ unsigned int DiscImage::Open(const std::string &fName)
 }
 unsigned int DiscImage::OpenCUE(const std::string &fName)
 {
-	std::ifstream ifp;
+	TsugaruIfStream ifp;
 	ifp.open(fName);
 	if(true!=ifp.is_open())
 	{
@@ -635,7 +636,7 @@ bool DiscImage::TryAnalyzeTracksWithMoreReasonableCUEInterpretation(void)
 
 unsigned int DiscImage::OpenISO(const std::string &fName)
 {
-	std::ifstream ifp;
+	TsugaruIfStream ifp;
 	ifp.open(fName,std::ios::binary);
 	if(true!=ifp.is_open())
 	{
@@ -678,7 +679,7 @@ unsigned int DiscImage::OpenISO(const std::string &fName)
 
 unsigned int DiscImage::OpenMDS(const std::string &fName)
 {
-	std::ifstream ifp(fName,std::ios::binary);
+	TsugaruIfStream ifp(fName,std::ios::binary);
 	if(true==ifp.is_open())
 	{
 		uint64_t mdfSize=0;
@@ -907,7 +908,7 @@ bool DiscImage::CacheBinary(void)
 {
 	if(0<binaries.size())
 	{
-		std::ifstream ifp;
+		TsugaruIfStream ifp;
 		ifp.open(binaries[0].fName,std::ios::binary);
 		if(true==ifp.is_open())
 		{
@@ -968,7 +969,7 @@ std::vector <unsigned char> DiscImage::ReadSectorMODE1(unsigned int HSG,unsigned
 	{
 		if(0==binaryCache.size())
 		{
-			std::ifstream ifp;
+			TsugaruIfStream ifp;
 			ifp.open(binaries[0].fName,std::ios::binary);
 			if(true==ifp.is_open() && 0<tracks.size() && (tracks[0].trackType==TRACK_MODE1_DATA || tracks[0].trackType==TRACK_MODE2_DATA))
 			{
@@ -1038,7 +1039,7 @@ std::vector <unsigned char> DiscImage::ReadSectorRAW(unsigned int HSG,unsigned i
 
 	if(0<binaries.size())
 	{
-		std::ifstream ifp;
+		TsugaruIfStream ifp;
 		ifp.open(binaries[0].fName,std::ios::binary);
 		if(true==ifp.is_open() && 0<tracks.size() && (tracks[0].trackType==TRACK_MODE1_DATA || tracks[0].trackType==TRACK_MODE2_DATA))
 		{
@@ -1092,7 +1093,7 @@ std::vector <unsigned char> DiscImage::ReadSectorMODE2(unsigned int HSG,unsigned
 
 	if(0<binaries.size())
 	{
-		std::ifstream ifp;
+		TsugaruIfStream ifp;
 		ifp.open(binaries[0].fName,std::ios::binary);
 		if(true==ifp.is_open() && 0<tracks.size() && (tracks[0].trackType==TRACK_MODE1_DATA || tracks[0].trackType==TRACK_MODE2_DATA))
 		{
@@ -1236,7 +1237,7 @@ std::vector <unsigned char> DiscImage::GetWave(MinSecFrm startMSF,MinSecFrm endM
 					// To prevent noise from the data track, it needs to be checked here.
 					if(LAYOUT_AUDIO==layoutType)
 					{
-						std::ifstream ifp;
+						TsugaruIfStream ifp;
 						ifp.open(bin.fName,std::ios::binary);
 						if(ifp.is_open())
 						{
@@ -1262,7 +1263,7 @@ std::vector <unsigned char> DiscImage::GetWave(MinSecFrm startMSF,MinSecFrm endM
 
 					if(LAYOUT_AUDIO==layoutType)
 					{
-						std::ifstream ifp;
+						TsugaruIfStream ifp;
 						ifp.open(bin.fName,std::ios::binary);
 						if(ifp.is_open())
 						{

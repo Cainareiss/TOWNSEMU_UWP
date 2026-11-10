@@ -2,7 +2,12 @@
 
 
 
-if(MSVC)
+if(TSUGARU_UWP)
+	set(DUMMY_LIBRARY_NAME yssimplesound_xaudio2)
+	set(SUBDIR uwp_xaudio2)
+	set(SRCS ${SUBDIR}/yssimplesound_xaudio2.cpp)
+	set(LIBS "")
+elseif(MSVC)
 	set(DUMMY_LIBRARY_NAME yssimplesound_dsound)
 	set(SUBDIR windows_dsound)
 	set(SRCS ${SUBDIR}/yssimplesound_dsound.cpp)
@@ -49,8 +54,10 @@ add_library(yssimplesound_platform ALIAS ${TARGET_NAME})
 add_library(yssimplesound_nownd yssimplesound.cpp yssimplesound.h nownd/yssimplesound_nownd.cpp)
 target_include_directories(yssimplesound_nownd PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
+if(NOT TSUGARU_UWP)
 add_subdirectory(unittest)
 add_subdirectory(playwav)
+endif()
 
 
 set(YS_ALL_BATCH_TEST ${YS_ALL_BATCH_TEST} PARENT_SCOPE)

@@ -16,6 +16,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #include "fssimplewindow.h"
 #include "fssimplewindow_connection.h"
+#ifdef TSUGARU_UWP
+#include "tsugaru_uwp_host.h"
+#endif
 
 // G** D*** Windows headers! >>
 #ifdef REG_NONE
@@ -1658,6 +1661,14 @@ void FsSimpleWindowConnection::WindowConnection::Render(bool swapBuffers)
 			}
 		}
 	}
+
+#ifdef TSUGARU_UWP
+	// UWP build: the host application draws the picture.  Hand it over (picture, then the status-bar lamps) and keep
+	// the window size equal to picture+status bar, so scaling stays 100% and mouse coordinates are picture pixels.
+	TsugaruUwpPublishFrame(imgWid,imgHei,winThr.mostRecentImage.rgba.data(),STATUS_WID,STATUS_HEI,winThr.statusBitmap);
+	TsugaruUwpSetWindowSize(imgWid,imgHei+STATUS_HEI);
+	return;
+#endif
 
 	glClear(GL_COLOR_BUFFER_BIT);
 	glViewport(0,0,winWid,winHei);

@@ -1,6 +1,8 @@
 set(TARGET_NAME filesys)
 
-if(MSVC)
+if(TSUGARU_UWP)
+	set(SRCS filesys_null.cpp)
+elseif(MSVC)
 	set(SRCS filesys_win.cpp)
 elseif(APPLE)
 	set(SRCS filesys_unix.cpp)

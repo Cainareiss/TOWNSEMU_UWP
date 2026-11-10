@@ -1,5 +1,7 @@
 set(TARGET_NAME midi_interface)
-if(MSVC)
+if(TSUGARU_UWP)
+	add_library(${TARGET_NAME} midi_interface.h midi_interface.cpp null/midi_implement.cpp)
+elseif(MSVC)
 	add_library(${TARGET_NAME} midi_interface.h midi_interface.cpp windows/midi_implement.cpp)
 	target_link_libraries(${TARGET_NAME} winmm.lib)
 else()

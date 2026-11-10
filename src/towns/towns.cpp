@@ -13,6 +13,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 << LICENSE */
 #include <iostream>
+#include "uwp_ifstream.h"
 #include <fstream>
 #include <algorithm>
 #include <cmath>
@@ -217,7 +218,7 @@ void FMTownsCommon::State::PowerOn(void)
 	}
 	if(""!=argv.keyMapFName)
 	{
-		std::ifstream ifp(argv.keyMapFName);
+		TsugaruIfStream ifp(argv.keyMapFName);
 		if(ifp.is_open())
 		{
 			std::vector <std::string> text;

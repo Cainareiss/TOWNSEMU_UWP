@@ -13,6 +13,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 << LICENSE */
 #include <fstream>
+#include "uwp_ifstream.h"
 
 #ifdef _WIN32
 	#include <direct.h>
@@ -39,7 +40,7 @@ std::string cpputil::MakeFullPathName(std::string dirName,std::string fName)
 
 bool cpputil::FileExists(std::string fName)
 {
-	std::ifstream fp(fName,std::ifstream::binary);
+	TsugaruIfStream fp(fName,TsugaruIfStream::binary);
 	if(true==fp.is_open())
 	{
 		fp.close();
@@ -81,7 +82,7 @@ std::string cpputil::FindFileWithSearchPaths(std::string fName,const std::vector
 std::vector <unsigned char> cpputil::ReadBinaryFile(std::string fName)
 {
 	std::vector <unsigned char> dat;
-	std::ifstream fp(fName,std::ifstream::binary);
+	TsugaruIfStream fp(fName,TsugaruIfStream::binary);
 	if(true==fp.is_open())
 	{
 		fp.seekg(0,fp.end);
@@ -99,7 +100,7 @@ std::vector <unsigned char> cpputil::ReadBinaryFile(std::string fName)
 std::vector <unsigned char> cpputil::ReadBinaryFile(std::string fName,long long int start,long long int length)
 {
 	std::vector <unsigned char> dat;
-	std::ifstream fp(fName,std::ifstream::binary);
+	TsugaruIfStream fp(fName,TsugaruIfStream::binary);
 	if(true==fp.is_open())
 	{
 		fp.seekg(start,fp.beg);
@@ -114,7 +115,7 @@ std::vector <unsigned char> cpputil::ReadBinaryFile(std::string fName,long long 
 
 bool cpputil::WriteBinaryFile(const std::string &fName,unsigned long long length,const unsigned char dat[])
 {
-	std::ofstream fp(fName,std::ofstream::binary);
+	TsugaruOfStream fp(fName,TsugaruOfStream::binary);
 	if(true==fp.is_open())
 	{
 		fp.write((char *)dat,length);
@@ -126,7 +127,7 @@ bool cpputil::WriteBinaryFile(const std::string &fName,unsigned long long length
 
 bool cpputil::WriteBinaryFile(const std::string &fName,unsigned long long int start,unsigned long long length,const unsigned char dat[])
 {
-	std::fstream fp(fName,std::ios::binary|std::ios::in|std::ios::out);
+	TsugaruFStream fp(fName,std::ios::binary|std::ios::in|std::ios::out);
 	if(true==fp.is_open())
 	{
 		fp.seekg(start,fp.beg);
@@ -140,7 +141,7 @@ bool cpputil::WriteBinaryFile(const std::string &fName,unsigned long long int st
 std::vector <std::string> cpputil::ReadTextFile(std::string fName)
 {
 	std::vector <std::string> text;
-	std::ifstream fp(fName);
+	TsugaruIfStream fp(fName);
 	if(true==fp.is_open())
 	{
 		while(true!=fp.eof())
@@ -155,7 +156,7 @@ std::vector <std::string> cpputil::ReadTextFile(std::string fName)
 
 bool cpputil::WriteTextFile(std::string fName,const std::vector <std::string> &text)
 {
-	std::ofstream fp(fName);
+	TsugaruOfStream fp(fName);
 	if(true==fp.is_open())
 	{
 		for(auto str : text)
@@ -850,7 +851,7 @@ void cpputil::SimplifyPath(std::string &path)
 long long int cpputil::FileSize(const std::string &fName)
 {
 	std::vector <unsigned char> dat;
-	std::ifstream fp(fName,std::ifstream::binary);
+	TsugaruIfStream fp(fName,TsugaruIfStream::binary);
 	if(true==fp.is_open())
 	{
 		fp.seekg(0,fp.end);

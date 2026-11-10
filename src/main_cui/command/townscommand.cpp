@@ -13,6 +13,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 << LICENSE */
 #include <algorithm>
+#include "uwp_ifstream.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -4108,7 +4109,7 @@ void TownsCommandInterpreter::Execute_PrintHistory(FMTownsCommon &towns,unsigned
 
 void TownsCommandInterpreter::Execute_SaveHistory(FMTownsCommon &towns,const std::string &fName)
 {
-	std::ofstream ofp(fName);
+	TsugaruOfStream ofp(fName);
 	if(ofp.is_open())
 	{
 		auto list=towns.debugger.GetCSEIPLog();
@@ -4862,7 +4863,7 @@ void TownsCommandInterpreter::Execute_UpdateMemoryFilter(FMTownsCommon &towns,Co
 
 void TownsCommandInterpreter::Execute_SaveYM2612Log(FMTownsCommon &towns,std::string fName)
 {
-	std::ofstream ofp(fName);
+	TsugaruOfStream ofp(fName);
 	if(ofp.is_open())
 	{
 		for(auto rwl : towns.sound.state.ym2612.regWriteLog)
@@ -5133,7 +5134,7 @@ void TownsCommandInterpreter::Execute_SaveKeyMap(const Outside_World &outside_wo
 {
 	if(2<=cmd.argv.size())
 	{
-		std::ofstream ofp(cmd.argv[1]);
+		TsugaruOfStream ofp(cmd.argv[1]);
 		if(ofp.is_open())
 		{
 			for(auto str : outside_world.MakeKeyMappingText())
@@ -5157,7 +5158,7 @@ void TownsCommandInterpreter::Execute_LoadKeyMap(Outside_World &outside_world,co
 {
 	if(2<=cmd.argv.size())
 	{
-		std::ifstream ifp(cmd.argv[1]);
+		TsugaruIfStream ifp(cmd.argv[1]);
 		if(ifp.is_open())
 		{
 			std::vector <std::string> text;
@@ -5245,7 +5246,7 @@ void TownsCommandInterpreter::Execute_SaveMemDump(FMTownsCommon &towns,Command &
 			buf.push_back(c);
 		}
 
-		std::ofstream ofp(cmd.argv[1],std::ios::binary);
+		TsugaruOfStream ofp(cmd.argv[1],std::ios::binary);
 		if(ofp.is_open())
 		{
 			ofp.write((const char *)buf.data(),buf.size());

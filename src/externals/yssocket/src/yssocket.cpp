@@ -13,7 +13,7 @@
   // winsock.h from windows.h
 	#include <winsock2.h>
 	#include <windows.h>
-	#pragma comment(lib,"wsock32.lib")
+	#pragma comment(lib,"ws2_32.lib")
 typedef int socklen_t;
 
 #else

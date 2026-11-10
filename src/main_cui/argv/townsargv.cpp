@@ -13,6 +13,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 << LICENSE */
 #include <iostream>
+#include "uwp_ifstream.h"
 #include <fstream>
 #include <stdlib.h>
 
@@ -302,7 +303,7 @@ void TownsARGV::PrintApplicationList(void) const
 
 void TownsARGV::CopyFile(std::string src,std::string dst)
 {
-	std::ifstream ifp(src,std::ios::binary);
+	TsugaruIfStream ifp(src,std::ios::binary);
 	if(ifp.is_open())
 	{
 		ifp.seekg(0,ifp.end);
@@ -314,7 +315,7 @@ void TownsARGV::CopyFile(std::string src,std::string dst)
 		ifp.read(buf.data(),buf.size());
 		ifp.close();
 
-		std::ofstream ofp(dst,std::ios::binary);
+		TsugaruOfStream ofp(dst,std::ios::binary);
 		if(ofp.is_open())
 		{
 			ofp.write(buf.data(),buf.size());
@@ -794,7 +795,7 @@ bool TownsARGV::AnalyzeCommandParameter(int argc,char *argv[])
 			{
 				z=0;
 			}
-			std::ofstream fp(fName,std::ofstream::binary);
+			TsugaruOfStream fp(fName,TsugaruOfStream::binary);
 			if(true==fp.is_open())
 			{
 				while(0!=MB)
